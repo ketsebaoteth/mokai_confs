@@ -4,7 +4,7 @@ name = "fmt"
 git_repo = "fmtlib/fmt"
 
 [recipes]
-"latest" = """"
+"latest" = """
 [project]
 name = "fmt"
 description = "A modern formatting library"
