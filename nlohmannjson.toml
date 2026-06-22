@@ -3,7 +3,8 @@ name = "nlohmannjson"
 
 git_repo = "nlohmann/json"
 
-mokai_toml = """"
+[recipes]
+"latest" = """"
 [project]
 name = "json"
 description = "JSON for Modern C++"
