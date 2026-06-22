@@ -1,0 +1,66 @@
+[project]
+name = "sfml"
+
+# INFO: Add `https://github.com/` while parsing
+git_repo = "sfml/sfml"
+
+mokai_toml = """"
+[project]
+name = "sfml"
+version = "3.1.0"
+cpp_version = "c++20"
+
+[target.sfml-system]
+type = "static_library"
+sources = ["**/SFML/System/*.cpp", "**/SFML/System/Unix/*.cpp"]
+include_dirs = [
+    "include",
+    "src",
+    "extlibs/headers/cpp-unicodelib",
+    "extlibs/headers/glad/include"
+]
+
+[target.sfml-window]
+type = "static_library"
+sources = ["**/SFML/Window/*.cpp", "**/SFML/Window/Unix/*.cpp"]
+include_dirs = ["include", "src","extlibs/headers/glad/include","extlibs/headers/vulkan"]
+
+depends_on = ["sfml-system"]
+system_libs = ["GL", "X11", "Xrandr", "Xi", "Xcursor", "udev", "pthread"]
+
+[target.sfml-graphics]
+type = "static_library"
+sources = [
+    "**/SFML/Graphics/*.cpp",
+    "**/SFML/Graphics/GLCheck.cpp",
+    "extlibs/SheenBidi/Source/*.c"
+]
+include_dirs = [
+    "include", "src",
+    "extlibs/headers/glad/include",
+    "extlibs/headers/stb_image",
+    "extlibs/SheenBidi/Headers",
+    "/usr/include/freetype2",
+    "/usr/include/libpng16",
+    "/usr/include/harfbuzz",
+    "extlibs/headers/qoi"
+]
+depends_on = ["sfml-window"]
+system_libs = ["freetype", "png", "harfbuzz"]
+
+[target.sfml-audio]
+type = "static_library"
+sources = ["**/SFML/Audio/*.cpp"]
+properties = ["SFML_IS_BIG_ENDIAN=0","MA_USE_STDINT=1"]
+include_dirs = [
+    "include", "src",
+    "extlibs/headers/dr_mp3",
+    "extlibs/headers/miniaudio"
+]
+depends_on = ["sfml-system"]
+system_libs = ["openal"]
+
+[exports]
+default_targets = ["sfml-graphics"]
+include_dirs = ["include"]
+"""
