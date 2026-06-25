@@ -1,0 +1,52 @@
+[project]
+name = "spdlog"
+git_repo = "gabime/spdlog"
+
+[recipes]
+"latest" = """
+[project]
+name = "spdlog"
+license = "MIT"
+description = "Very fast, masked and object-oriented C++ logging library."
+homepage = "https://github.com/gabime/spdlog"
+cpp_version = "c++11"
+
+# Extract version dynamically
+version_from = { file = "include/spdlog/version.h", pattern = "#define SPDLOG_VER_MAJOR ([0-9]+)" }
+
+# Tell Mokai that spdlog requires the 'fmt' package
+dependencies = ["fmt"]
+
+[target.spdlog]
+type = "static_library"
+sources = [
+    "src/spdlog.cpp",
+    "src/stdout_sinks.cpp",
+    "src/color_sinks.cpp",
+    "src/file_sinks.cpp",
+    "src/async.cpp",
+    "src/cfg.cpp"
+]
+include_dirs = ["include"]
+
+# Mandatory defines for a compiled spdlog using external fmt
+properties = ["SPDLOG_COMPILED_LIB", "SPDLOG_FMT_EXTERNAL"]
+
+# Link spdlog against the fmt library
+depends_on = ["fmt"]
+
+# System threading requirements for Unix-like OS
+[[target.spdlog.system_libs_if]]
+condition = "os == linux || os == macos"
+libs = ["pthread"]
+
+# -----------------------------------------------------------------------
+# Interface for Consumers
+# -----------------------------------------------------------------------
+[exports]
+default_targets = ["spdlog"]
+include_dirs = ["include"]
+
+# These macros MUST be propagated to anyone using spdlog headers
+defines_required = ["SPDLOG_COMPILED_LIB", "SPDLOG_FMT_EXTERNAL"]
+"""

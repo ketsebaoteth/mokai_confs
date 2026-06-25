@@ -1,0 +1,87 @@
+[project]
+name = "glm"
+git_repo = "g-truc/glm"
+
+[recipes]
+"latest" = """
+[project]
+name = "glm"
+license = "Happy Bunny / MIT"
+description = "OpenGL Mathematics (GLM)"
+homepage = "https://github.com/g-truc/glm"
+cpp_version = "c++17"
+
+# Extracts version dynamically from the setup header
+version_from = { file = "glm/detail/setup.hpp", pattern = "#define[ ]+GLM_VERSION_MAJOR[ ]+([0-9]+)" }
+
+include_dirs = ["."]
+
+[options]
+GLM_ENABLE_FAST_MATH = false
+GLM_ENABLE_SIMD_SSE2 = false
+GLM_ENABLE_SIMD_AVX = false
+GLM_ENABLE_SIMD_AVX2 = false
+GLM_FORCE_PURE = false
+
+[property_group.simd_avx2]
+condition = "options.GLM_ENABLE_SIMD_AVX2 == true"
+defines = ["GLM_FORCE_INTRINSICS"]
+
+[property_group.simd_avx]
+condition = "options.GLM_ENABLE_SIMD_AVX == true"
+defines = ["GLM_FORCE_INTRINSICS"]
+
+[property_group.fast_math_nix]
+condition = "compiler != msvc && options.GLM_ENABLE_FAST_MATH == true"
+flags = ["-ffast-math"]
+
+[property_group.fast_math_msvc]
+condition = "compiler == msvc && options.GLM_ENABLE_FAST_MATH == true"
+flags = ["/fp:fast"]
+
+[target.glm]
+type = "static_library"
+sources = []
+include_dirs = ["."]
+properties = ["@simd_avx2", "@simd_avx"]
+
+# --- Conditional SIMD Flags (GCC/Clang) ---
+
+[[target.glm.flags_if]]
+condition = "compiler != msvc && options.GLM_ENABLE_SIMD_AVX2 == true"
+flags = ["-mavx2"]
+
+[[target.glm.flags_if]]
+condition = "compiler != msvc && options.GLM_ENABLE_SIMD_AVX == true"
+flags = ["-mavx"]
+
+[[target.glm.flags_if]]
+condition = "compiler != msvc && options.GLM_ENABLE_SIMD_SSE2 == true"
+flags = ["-msse2"]
+
+# --- Conditional SIMD Flags (MSVC) ---
+
+[[target.glm.flags_if]]
+condition = "compiler == msvc && options.GLM_ENABLE_SIMD_AVX2 == true"
+flags = ["/arch:AVX2"]
+
+[[target.glm.flags_if]]
+condition = "compiler == msvc && options.GLM_ENABLE_SIMD_AVX == true"
+flags = ["/arch:AVX"]
+
+# --- Math & Extensions ---
+
+[[target.glm.properties_if]]
+condition = "options.GLM_FORCE_PURE == true"
+defines = ["GLM_FORCE_PURE"]
+
+[[target.glm.flags_if]]
+condition = "true"
+properties = ["@fast_math_nix", "@fast_math_msvc"]
+
+
+[exports]
+default_targets = ["glm"]
+include_dirs = ["."]
+defines_optional = ["GLM_FORCE_INTRINSICS"]
+"""
