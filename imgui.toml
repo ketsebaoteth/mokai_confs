@@ -15,6 +15,7 @@ cpp_version = "c++14"
 [options]
 IMGUI_WITH_GLFW = true
 IMGUI_WITH_VULKAN = true
+IMGUI_WITH_OPENGL3 = true
 
 [target.imgui]
 type = "static_library"
@@ -45,6 +46,10 @@ patterns = ["backends/imgui_impl_vulkan.cpp"]
 condition = "options.IMGUI_WITH_VULKAN == true"
 defines = ["IMGUI_IMPL_VULKAN_NO_PROTOTYPES"]
 depends_on = ["volk"]
+
+[[target.imgui.sources_if]]
+condition = "options.IMGUI_WITH_OPENGL3 == true"
+patterns = ["backends/imgui_impl_opengl3.cpp"]
 
 [exports]
 default_targets = ["imgui"]
